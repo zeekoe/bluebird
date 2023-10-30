@@ -10,15 +10,16 @@ import java.util.Properties;
 
 public class Influx {
 
-    private final String databaseUrl;
+    private final String influxUrl;
+    private final String databaseName;
     private final String username;
     private final String password;
     private final String measurement;
 
     public void writePoint(Point point) {
         // TODO keep InfluxDB instance
-        InfluxDB influxDB = InfluxDBFactory.connect(databaseUrl, username, password);
-        influxDB.setDatabase("sensors");
+        InfluxDB influxDB = InfluxDBFactory.connect(influxUrl, username, password);
+        influxDB.setDatabase(databaseName);
         influxDB.write(point);
     }
 
@@ -29,7 +30,8 @@ public class Influx {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        databaseUrl = properties.getProperty("influxdb.url");
+        influxUrl = properties.getProperty("influxdb.url");
+        databaseName = properties.getProperty("influxdb.database");
         username = properties.getProperty("influxdb.username");
         password = properties.getProperty("influxdb.password");
         measurement = properties.getProperty("influxdb.bluebird.measurement");
