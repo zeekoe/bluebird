@@ -17,6 +17,8 @@ class RetryerTest {
         verify(spy).sleep(30_000);
         verify(spy).sleep(120_000);
         verify(spy).sleep(270_000);
+        verify(spy).sleep(480_000);
+        verify(spy).sleep(750_000);
     }
 
     @Test

@@ -1,7 +1,9 @@
 package com.github.zeekoe.bluebird;
 
+import java.time.LocalDateTime;
+
 public class Retryer<T extends Runnable> {
-    private static final int MAX_RETRY_COUNT = 3;
+    private static final int MAX_RETRY_COUNT = 5;
     private final T runnable;
     private int retryCount;
 
@@ -20,7 +22,7 @@ public class Retryer<T extends Runnable> {
                 retryCount = 1;
             } catch (Exception e) {
                 retryCount++;
-                System.out.println("Exception, retry count: " + retryCount);
+                System.out.println(LocalDateTime.now() + ": Exception, retry count: " + retryCount);
                 System.out.println(e.getMessage());
             }
             if (retryCount <= MAX_RETRY_COUNT) {
