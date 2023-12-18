@@ -70,6 +70,7 @@ public class Heatpump implements Runnable {
                 .addField("compressor_power_low_accuracy", heatpumpLog.getCompressor_power_low_accuracy())
                 .addField("t_room", heatpumpLog.getT_room())
                 .addField("t_room_target", heatpumpLog.getT_room_target())
+                .addField("t_thermostat_setpoint", heatpumpLog.getT_thermostat_setpoint())
                 .addField("cm_mass_power_in", heatpumpLog.getCm_mass_power_in())
                 .addField("cm_mass_power_out", heatpumpLog.getCm_mass_power_out())
                 .addField("t_water_house_in", heatpumpLog.getT_water_house_in())

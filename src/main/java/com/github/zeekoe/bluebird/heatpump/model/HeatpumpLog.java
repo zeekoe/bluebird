@@ -29,6 +29,7 @@ public class HeatpumpLog {
     private double compressor_power_low_accuracy;
     private double t_room;
     private double t_room_target;
+    private double t_thermostat_setpoint;
     private double cm_mass_power_in;
     private double cm_mass_power_out;
     private double t_water_house_in;
@@ -210,6 +211,14 @@ public class HeatpumpLog {
 
     public void setT_room_target(double t_room_target) {
         this.t_room_target = t_room_target;
+    }
+
+    public double getT_thermostat_setpoint() {
+        return t_thermostat_setpoint;
+    }
+
+    public void setT_thermostat_setpoint(double t_thermostat_setpoint) {
+        this.t_thermostat_setpoint = t_thermostat_setpoint;
     }
 
     public double getCm_mass_power_in() {
