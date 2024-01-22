@@ -55,133 +55,18 @@ public class NimbusAuth {
                 .cookieHandler(cm)
                 .build();
 
-        final String bla1 = doRequest("https://portal.weheat.nl/signin?callbackUrl=%2F");
+        String request = "{\"grant_type\": \"password\", \"client_id\": \"WeheatCommunityAPI\" \"email\":\"" + USERNAME.replace("@", "%40") + "\",\"password\":\"" + PASSWORD + "\",\"scope\": \"openid\"}";
 
-        String csrfToken = doRequest("https://portal.weheat.nl/api/auth/csrf")
-                .replace("{\"csrfToken\":\"", "")
-                .replace("\"}", "");
-
-        final String requestBody = "csrfToken=" + csrfToken + "&callbackUrl=https%3A%2F%2Fportal.weheat.nl%2Fsignin%3FcallbackUrl%3D%252F&json=true";
-        final HttpRequest.Builder builder41 = HttpRequest.newBuilder()
-                .POST(HttpRequest.BodyPublishers.ofString(requestBody))
-                .uri(URI.create("https://portal.weheat.nl/api/auth/signin/keycloak"))
+        final HttpRequest.Builder builder42 = HttpRequest.newBuilder()
+                .POST(HttpRequest.BodyPublishers.ofString(request))
+                .uri(URI.create("https://auth.weheat.nl/auth/realms/Weheat/protocol/openid-connect/token?grant_type=password"))
                 .setHeader("User-Agent", "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/116.0");
 
-        final HttpResponse<InputStream> httpResponse1 = httpClient.send(builder41.build(), HttpResponse.BodyHandlers.ofInputStream());
-        // TODO => faalt hier. We zouden een 200 moeten krijgen, maar krijgen een 302 naar een csrf-pagina.
+        final HttpResponse<InputStream> httpResponse2 = httpClient.send(builder42.build(), HttpResponse.BodyHandlers.ofInputStream());
+        System.out.println(httpResponse2.headers().firstValue("location"));
+        final String s2 = new String(getDecodedInputStream(httpResponse2).readAllBytes());
 
-        final String s = new String(getDecodedInputStream(httpResponse1).readAllBytes());
-        System.out.println(s);
-
-
-        final HttpRequest.Builder builder4XX = HttpRequest.newBuilder()
-                .GET()
-                .uri(URI.create("https://portal.weheat.nl/api/auth/signin?csrf=true"));
-
-        final HttpResponse<InputStream> httpResponseX1 = httpClient.send(builder4XX.build(), HttpResponse.BodyHandlers.ofInputStream());
-
-
-
-
-        final String s1 = doRequest("https://portal.weheat.nl/signin?callbackUrl=%2F");
-
-        final CodeVerifier codeVerifier = new CodeVerifier();
-// The client ID provisioned by the OpenID provider when
-// the client was registered
-        ClientID clientID = new ClientID("weheat-portal");
-
-// The client callback URL
-        URI callback = new URI("https://portal.weheat.nl/api/auth/callback/keycloak");
-
-// Generate random state string to securely pair the callback to this request
-        State state = new State();
-
-// Generate nonce for the ID token
-        Nonce nonce = new Nonce();
-
-// Compose the OpenID authentication request (for the code flow)
-        AuthenticationRequest request = new AuthenticationRequest.Builder(
-                new ResponseType("code"),
-                new Scope("openid", "email", "profile"),
-                clientID,
-                callback)
-                .endpointURI(new URI("https://auth.weheat.nl/auth/realms/Weheat/protocol/openid-connect/auth"))
-                .state(state)
-                .nonce(nonce).codeChallenge(codeVerifier, CodeChallengeMethod.S256)
-                .build();
-
-
-        System.out.println(request.toURI());
-
-        String loginUrl = null;
-
-        final HTTPResponse response = request.toHTTPRequest().send();
-        final String[] bodyLines = response.getBody().split("\n");
-        for (String bodyLine : bodyLines) {
-            if (bodyLine.contains("\"loginAction\"")) {
-                final String trimmed = bodyLine.replace("\"loginAction\"", "").trim();
-                String strPattern = "\"[^\"]*\"";
-
-                Pattern pattern = Pattern.compile(strPattern);
-                Matcher matcher = pattern.matcher(trimmed);
-
-                matcher.find();
-                loginUrl = matcher.group().replace("\"","");
-            }
-        }
-        System.out.println(response);
-
-        final String cookieHeader = cm.getCookieStore().get(new URI("https://auth.weheat.nl")).stream().map(c -> c.getName() + "=" + c.getValue()).collect(Collectors.joining(";"));
-
-        final HttpRequest.Builder builder = HttpRequest.newBuilder()
-                .POST(HttpRequest.BodyPublishers.ofString("username=" + USERNAME.replace("@", "%40") + "&password=" + PASSWORD + "&credentialId="))
-                .uri(URI.create(loginUrl))
-                .setHeader("User-Agent", "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/116.0") // add request header
-                .setHeader("Content-Type", "application/x-www-form-urlencoded");
-//                .setHeader("Cookie", cookieHeader);
-
-        HttpResponse<String> response2 = httpClient.send(builder.build(), HttpResponse.BodyHandlers.ofString());
-
-        final String keyCloakUrl = response2.headers().firstValue("location").orElseThrow();
-
-        final HttpRequest.Builder builder4 = HttpRequest.newBuilder()
-                .GET()
-                .uri(URI.create(keyCloakUrl))
-                .setHeader("User-Agent", "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/116.0");
-
-        final HttpResponse<InputStream> httpResponse = httpClient.send(builder4.build(), HttpResponse.BodyHandlers.ofInputStream());
-        System.out.println(httpResponse.headers().firstValue("location"));
-        String response3 = new String(getDecodedInputStream(httpResponse).readAllBytes());
-
-
-        System.out.println(response3);
-
-//        String signinUrl = "https://portal.weheat.nl/signin?callbackUrl=%2F";
-
-
-//        String response4 = doRequest(signinUrl);
-
-//        System.out.println(response4);
-
-        String token = "";
-
-        String sessionUrl = "https://portal.weheat.nl/api/auth/session";
-
-        final HttpRequest requestbla = HttpRequest.newBuilder()
-                .GET()
-                .uri(URI.create(sessionUrl))
-                .setHeader("User-Agent", "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/116.0").build();
-
-        final HttpResponse<String> requestblares = httpClient.send(requestbla, HttpResponse.BodyHandlers.ofString());
-
-
-        String hpLogUrl = "https://api.weheat.nl/api/v1/heat-pumps/7c47de4f-5d0e-42e2-a6e2-fd2dba8a3c04/logs/latest";
-
-        final HttpRequest.Builder builder5 = HttpRequest.newBuilder()
-                .GET()
-                .uri(URI.create(hpLogUrl))
-                .header("Authorization", "Bearer " + token)
-                .setHeader("User-Agent", "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/116.0");
+        System.out.println(s2);
     }
 
     private static String doRequest(String url) throws IOException, InterruptedException {
