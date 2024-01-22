@@ -55,15 +55,33 @@ public class NimbusAuth {
                 .cookieHandler(cm)
                 .build();
 
+        final String bla1 = doRequest("https://portal.weheat.nl/signin?callbackUrl=%2F");
+
+        String csrfToken = doRequest("https://portal.weheat.nl/api/auth/csrf")
+                .replace("{\"csrfToken\":\"", "")
+                .replace("\"}", "");
+
+        final String requestBody = "csrfToken=" + csrfToken + "&callbackUrl=https%3A%2F%2Fportal.weheat.nl%2Fsignin%3FcallbackUrl%3D%252F&json=true";
         final HttpRequest.Builder builder41 = HttpRequest.newBuilder()
-                .GET()
-                .uri(URI.create("https://portal.weheat.nl/"))
+                .POST(HttpRequest.BodyPublishers.ofString(requestBody))
+                .uri(URI.create("https://portal.weheat.nl/api/auth/signin/keycloak"))
                 .setHeader("User-Agent", "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/116.0");
 
         final HttpResponse<InputStream> httpResponse1 = httpClient.send(builder41.build(), HttpResponse.BodyHandlers.ofInputStream());
-        System.out.println(httpResponse1.headers().firstValue("location"));
+        // TODO => faalt hier. We zouden een 200 moeten krijgen, maar krijgen een 302 naar een csrf-pagina.
+
         final String s = new String(getDecodedInputStream(httpResponse1).readAllBytes());
         System.out.println(s);
+
+
+        final HttpRequest.Builder builder4XX = HttpRequest.newBuilder()
+                .GET()
+                .uri(URI.create("https://portal.weheat.nl/api/auth/signin?csrf=true"));
+
+        final HttpResponse<InputStream> httpResponseX1 = httpClient.send(builder4XX.build(), HttpResponse.BodyHandlers.ofInputStream());
+
+
+
 
         final String s1 = doRequest("https://portal.weheat.nl/signin?callbackUrl=%2F");
 
