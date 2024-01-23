@@ -10,16 +10,16 @@ public class HeatpumpLog {
     private LocalDateTime timestamp;
     private long unix_time_mcu;
     private int state;
-    private double t_1;
-    private double t_2;
-    private double fan_power;
-    private double t_compressor_in;
-    private double t_compressor_in_transient;
-    private double t_compressor_out;
-    private double t_air_in;
-    private double t_air_out;
-    private double t_water_in;
-    private double t_water_out;
+    private double t1;
+    private double t2;
+    private double fanPower;
+    private double tCompressorIn;
+    private double tCompressorInTransient;
+    private double tCompressorOut;
+    private double tAirIn;
+    private double tAirOut;
+    private double tWaterIn;
+    private double tWaterOut;
     private double t_compressor_out_transient;
     private double p_compressor_in;
     private double p_compressor_out;
@@ -27,12 +27,12 @@ public class HeatpumpLog {
     private double fan;
     private double t_inverter;
     private double compressor_power_low_accuracy;
-    private double t_room;
-    private double t_room_target;
-    private double t_thermostat_setpoint;
-    private double cm_mass_power_in;
-    private double cm_mass_power_out;
-    private double t_water_house_in;
+    private double tRoom;
+    private double tRoom_target;
+    private double tThermostatSetpoint;
+    private double cmMassPowerIn;
+    private double cmMassPowerOut;
+    private double tWaterHouseIn;
     private double cm_mass_flow;
     private double ot_boiler_feed_temperature;
     private double ot_boiler_return_temperature;
@@ -61,84 +61,84 @@ public class HeatpumpLog {
         this.state = state;
     }
 
-    public double getT_1() {
-        return t_1;
+    public double getT1() {
+        return t1;
     }
 
-    public void setT_1(double t_1) {
-        this.t_1 = t_1;
+    public void setT1(double t1) {
+        this.t1 = t1;
     }
 
-    public double getT_2() {
-        return t_2;
+    public double getT2() {
+        return t2;
     }
 
-    public void setT_2(double t_2) {
-        this.t_2 = t_2;
+    public void setT2(double t2) {
+        this.t2 = t2;
     }
 
-    public double getFan_power() {
-        return fan_power;
+    public double getFanPower() {
+        return fanPower;
     }
 
-    public void setFan_power(double fan_power) {
-        this.fan_power = fan_power;
+    public void setFanPower(double fanPower) {
+        this.fanPower = fanPower;
     }
 
-    public double getT_compressor_in() {
-        return t_compressor_in;
+    public double gettCompressorIn() {
+        return tCompressorIn;
     }
 
-    public void setT_compressor_in(double t_compressor_in) {
-        this.t_compressor_in = t_compressor_in;
+    public void settCompressorIn(double tCompressorIn) {
+        this.tCompressorIn = tCompressorIn;
     }
 
-    public double getT_compressor_in_transient() {
-        return t_compressor_in_transient;
+    public double gettCompressorInTransient() {
+        return tCompressorInTransient;
     }
 
-    public void setT_compressor_in_transient(double t_compressor_in_transient) {
-        this.t_compressor_in_transient = t_compressor_in_transient;
+    public void settCompressorInTransient(double tCompressorInTransient) {
+        this.tCompressorInTransient = tCompressorInTransient;
     }
 
-    public double getT_compressor_out() {
-        return t_compressor_out;
+    public double gettCompressorOut() {
+        return tCompressorOut;
     }
 
-    public void setT_compressor_out(double t_compressor_out) {
-        this.t_compressor_out = t_compressor_out;
+    public void settCompressorOut(double tCompressorOut) {
+        this.tCompressorOut = tCompressorOut;
     }
 
-    public double getT_air_in() {
-        return t_air_in;
+    public double gettAirIn() {
+        return tAirIn;
     }
 
-    public void setT_air_in(double t_air_in) {
-        this.t_air_in = t_air_in;
+    public void settAirIn(double tAirIn) {
+        this.tAirIn = tAirIn;
     }
 
-    public double getT_air_out() {
-        return t_air_out;
+    public double gettAirOut() {
+        return tAirOut;
     }
 
-    public void setT_air_out(double t_air_out) {
-        this.t_air_out = t_air_out;
+    public void settAirOut(double tAirOut) {
+        this.tAirOut = tAirOut;
     }
 
-    public double getT_water_in() {
-        return t_water_in;
+    public double gettWaterIn() {
+        return tWaterIn;
     }
 
-    public void setT_water_in(double t_water_in) {
-        this.t_water_in = t_water_in;
+    public void settWaterIn(double tWaterIn) {
+        this.tWaterIn = tWaterIn;
     }
 
-    public double getT_water_out() {
-        return t_water_out;
+    public double gettWaterOut() {
+        return tWaterOut;
     }
 
-    public void setT_water_out(double t_water_out) {
-        this.t_water_out = t_water_out;
+    public void settWaterOut(double tWaterOut) {
+        this.tWaterOut = tWaterOut;
     }
 
     public double getT_compressor_out_transient() {
@@ -197,52 +197,52 @@ public class HeatpumpLog {
         this.compressor_power_low_accuracy = compressor_power_low_accuracy;
     }
 
-    public double getT_room() {
-        return t_room;
+    public double gettRoom() {
+        return tRoom;
     }
 
-    public void setT_room(double t_room) {
-        this.t_room = t_room;
+    public void settRoom(double tRoom) {
+        this.tRoom = tRoom;
     }
 
-    public double getT_room_target() {
-        return t_room_target;
+    public double gettRoom_target() {
+        return tRoom_target;
     }
 
-    public void setT_room_target(double t_room_target) {
-        this.t_room_target = t_room_target;
+    public void settRoom_target(double tRoom_target) {
+        this.tRoom_target = tRoom_target;
     }
 
-    public double getT_thermostat_setpoint() {
-        return t_thermostat_setpoint;
+    public double gettThermostatSetpoint() {
+        return tThermostatSetpoint;
     }
 
-    public void setT_thermostat_setpoint(double t_thermostat_setpoint) {
-        this.t_thermostat_setpoint = t_thermostat_setpoint;
+    public void settThermostatSetpoint(double tThermostatSetpoint) {
+        this.tThermostatSetpoint = tThermostatSetpoint;
     }
 
-    public double getCm_mass_power_in() {
-        return cm_mass_power_in;
+    public double getCmMassPowerIn() {
+        return cmMassPowerIn;
     }
 
-    public void setCm_mass_power_in(double cm_mass_power_in) {
-        this.cm_mass_power_in = cm_mass_power_in;
+    public void setCmMassPowerIn(double cmMassPowerIn) {
+        this.cmMassPowerIn = cmMassPowerIn;
     }
 
-    public double getCm_mass_power_out() {
-        return cm_mass_power_out;
+    public double getCmMassPowerOut() {
+        return cmMassPowerOut;
     }
 
-    public void setCm_mass_power_out(double cm_mass_power_out) {
-        this.cm_mass_power_out = cm_mass_power_out;
+    public void setCmMassPowerOut(double cmMassPowerOut) {
+        this.cmMassPowerOut = cmMassPowerOut;
     }
 
-    public double getT_water_house_in() {
-        return t_water_house_in;
+    public double gettWaterHouseIn() {
+        return tWaterHouseIn;
     }
 
-    public void setT_water_house_in(double t_water_house_in) {
-        this.t_water_house_in = t_water_house_in;
+    public void settWaterHouseIn(double tWaterHouseIn) {
+        this.tWaterHouseIn = tWaterHouseIn;
     }
 
     public double getCm_mass_flow() {
@@ -274,12 +274,12 @@ public class HeatpumpLog {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         HeatpumpLog that = (HeatpumpLog) o;
-        return state == that.state && Double.compare(t_1, that.t_1) == 0 && Double.compare(t_2, that.t_2) == 0 && Double.compare(fan_power, that.fan_power) == 0 && Double.compare(t_compressor_in, that.t_compressor_in) == 0 && Double.compare(t_compressor_in_transient, that.t_compressor_in_transient) == 0 && Double.compare(t_compressor_out, that.t_compressor_out) == 0 && Double.compare(t_air_in, that.t_air_in) == 0 && Double.compare(t_air_out, that.t_air_out) == 0 && Double.compare(t_water_in, that.t_water_in) == 0 && Double.compare(t_water_out, that.t_water_out) == 0 && Double.compare(t_compressor_out_transient, that.t_compressor_out_transient) == 0 && Double.compare(p_compressor_in, that.p_compressor_in) == 0 && Double.compare(p_compressor_out, that.p_compressor_out) == 0 && Double.compare(rpm, that.rpm) == 0 && Double.compare(fan, that.fan) == 0 && Double.compare(t_inverter, that.t_inverter) == 0 && Double.compare(compressor_power_low_accuracy, that.compressor_power_low_accuracy) == 0 && Double.compare(t_room, that.t_room) == 0 && Double.compare(t_room_target, that.t_room_target) == 0 && Double.compare(cm_mass_power_in, that.cm_mass_power_in) == 0 && Double.compare(cm_mass_power_out, that.cm_mass_power_out) == 0 && Double.compare(t_water_house_in, that.t_water_house_in) == 0 && Double.compare(cm_mass_flow, that.cm_mass_flow) == 0 && Double.compare(ot_boiler_feed_temperature, that.ot_boiler_feed_temperature) == 0 && Double.compare(ot_boiler_return_temperature, that.ot_boiler_return_temperature) == 0 && Objects.equals(timestamp, that.timestamp);
+        return state == that.state && Double.compare(t1, that.t1) == 0 && Double.compare(t2, that.t2) == 0 && Double.compare(fanPower, that.fanPower) == 0 && Double.compare(tCompressorIn, that.tCompressorIn) == 0 && Double.compare(tCompressorInTransient, that.tCompressorInTransient) == 0 && Double.compare(tCompressorOut, that.tCompressorOut) == 0 && Double.compare(tAirIn, that.tAirIn) == 0 && Double.compare(tAirOut, that.tAirOut) == 0 && Double.compare(tWaterIn, that.tWaterIn) == 0 && Double.compare(tWaterOut, that.tWaterOut) == 0 && Double.compare(t_compressor_out_transient, that.t_compressor_out_transient) == 0 && Double.compare(p_compressor_in, that.p_compressor_in) == 0 && Double.compare(p_compressor_out, that.p_compressor_out) == 0 && Double.compare(rpm, that.rpm) == 0 && Double.compare(fan, that.fan) == 0 && Double.compare(t_inverter, that.t_inverter) == 0 && Double.compare(compressor_power_low_accuracy, that.compressor_power_low_accuracy) == 0 && Double.compare(tRoom, that.tRoom) == 0 && Double.compare(tRoom_target, that.tRoom_target) == 0 && Double.compare(cmMassPowerIn, that.cmMassPowerIn) == 0 && Double.compare(cmMassPowerOut, that.cmMassPowerOut) == 0 && Double.compare(tWaterHouseIn, that.tWaterHouseIn) == 0 && Double.compare(cm_mass_flow, that.cm_mass_flow) == 0 && Double.compare(ot_boiler_feed_temperature, that.ot_boiler_feed_temperature) == 0 && Double.compare(ot_boiler_return_temperature, that.ot_boiler_return_temperature) == 0 && Objects.equals(timestamp, that.timestamp);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(timestamp, state, t_1, t_2, fan_power, t_compressor_in, t_compressor_in_transient, t_compressor_out, t_air_in, t_air_out, t_water_in, t_water_out, t_compressor_out_transient, p_compressor_in, p_compressor_out, rpm, fan, t_inverter, compressor_power_low_accuracy, t_room, t_room_target, cm_mass_power_in, cm_mass_power_out, t_water_house_in, cm_mass_flow, ot_boiler_feed_temperature, ot_boiler_return_temperature);
+        return Objects.hash(timestamp, state, t1, t2, fanPower, tCompressorIn, tCompressorInTransient, tCompressorOut, tAirIn, tAirOut, tWaterIn, tWaterOut, t_compressor_out_transient, p_compressor_in, p_compressor_out, rpm, fan, t_inverter, compressor_power_low_accuracy, tRoom, tRoom_target, cmMassPowerIn, cmMassPowerOut, tWaterHouseIn, cm_mass_flow, ot_boiler_feed_temperature, ot_boiler_return_temperature);
     }
 
     @Override
@@ -287,16 +287,16 @@ public class HeatpumpLog {
         return "HeatpumpLog{" +
                 "timestamp=" + timestamp +
                 ", state=" + state +
-                ", t_1=" + t_1 +
-                ", t_2=" + t_2 +
-                ", fan_power=" + fan_power +
-                ", t_compressor_in=" + t_compressor_in +
-                ", t_compressor_in_transient=" + t_compressor_in_transient +
-                ", t_compressor_out=" + t_compressor_out +
-                ", t_air_in=" + t_air_in +
-                ", t_air_out=" + t_air_out +
-                ", t_water_in=" + t_water_in +
-                ", t_water_out=" + t_water_out +
+                ", t_1=" + t1 +
+                ", t_2=" + t2 +
+                ", fan_power=" + fanPower +
+                ", t_compressor_in=" + tCompressorIn +
+                ", t_compressor_in_transient=" + tCompressorInTransient +
+                ", t_compressor_out=" + tCompressorOut +
+                ", t_air_in=" + tAirIn +
+                ", t_air_out=" + tAirOut +
+                ", t_water_in=" + tWaterIn +
+                ", t_water_out=" + tWaterOut +
                 ", t_compressor_out_transient=" + t_compressor_out_transient +
                 ", p_compressor_in=" + p_compressor_in +
                 ", p_compressor_out=" + p_compressor_out +
@@ -304,11 +304,11 @@ public class HeatpumpLog {
                 ", fan=" + fan +
                 ", t_inverter=" + t_inverter +
                 ", compressor_power_low_accuracy=" + compressor_power_low_accuracy +
-                ", t_room=" + t_room +
-                ", t_room_target=" + t_room_target +
-                ", cm_mass_power_in=" + cm_mass_power_in +
-                ", cm_mass_power_out=" + cm_mass_power_out +
-                ", t_water_house_in=" + t_water_house_in +
+                ", t_room=" + tRoom +
+                ", t_room_target=" + tRoom_target +
+                ", cm_mass_power_in=" + cmMassPowerIn +
+                ", cm_mass_power_out=" + cmMassPowerOut +
+                ", t_water_house_in=" + tWaterHouseIn +
                 ", cm_mass_flow=" + cm_mass_flow +
                 ", ot_boiler_feed_temperature=" + ot_boiler_feed_temperature +
                 ", ot_boiler_return_temperature=" + ot_boiler_return_temperature +

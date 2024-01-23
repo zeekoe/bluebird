@@ -10,10 +10,14 @@ import java.util.StringJoiner;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Token {
+    private LocalDateTime tokenTime;
     private String access_token;
     private int expires_in;
-    private int expires_at;
     private String refresh_token;
+
+    public Token() {
+        this.tokenTime = LocalDateTime.now();
+    }
 
     public String getAccess_token() {
         return access_token;
@@ -31,16 +35,8 @@ public class Token {
         this.expires_in = expires_in;
     }
 
-    public int getExpires_at() {
-        return expires_at;
-    }
-
-    public void setExpires_at(int expires_at) {
-        this.expires_at = expires_at;
-    }
-
     public LocalDateTime getExpiryDateTime() {
-        return LocalDateTime.ofInstant(Instant.ofEpochSecond(expires_at), ZoneId.systemDefault());
+        return tokenTime.plusMinutes(expires_in);
     }
 
     public String getRefresh_token() {
@@ -55,13 +51,13 @@ public class Token {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Token that = (Token) o;
-        return expires_in == that.expires_in && expires_at == that.expires_at && Objects.equals(access_token, that.access_token) && Objects.equals(refresh_token, that.refresh_token);
+        Token token = (Token) o;
+        return expires_in == token.expires_in && Objects.equals(tokenTime, token.tokenTime) && Objects.equals(access_token, token.access_token) && Objects.equals(refresh_token, token.refresh_token);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(access_token, expires_in, expires_at, refresh_token);
+        return Objects.hash(tokenTime, access_token, expires_in, refresh_token);
     }
 
     @Override

@@ -1,27 +1,23 @@
 package com.github.zeekoe.bluebird.heatpump;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.github.zeekoe.bluebird.heatpump.model.HeatpumpLog;
 import com.github.zeekoe.bluebird.influx.Influx;
+import com.github.zeekoe.bluebird.infrastructure.MyHttpClient;
 import org.influxdb.dto.Point;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.concurrent.TimeUnit;
 
 public class Heatpump implements Runnable {
 
-    private static final HttpClient httpClient = HttpClient.newBuilder()
-            .version(HttpClient.Version.HTTP_1_1)
-            .connectTimeout(Duration.ofSeconds(10))
-            .build();
+    public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper()
+            .registerModule(new JavaTimeModule());
+    private static final MyHttpClient httpClient = new MyHttpClient();
 
     private final Auth auth;
 
@@ -36,10 +32,8 @@ public class Heatpump implements Runnable {
 
             final String heatpumpLogString = responseBody.replace("[", "").replace("]", "");
 
-            ObjectMapper objectMapper = new ObjectMapper()
-                    .registerModule(new JavaTimeModule());
-            final HeatpumpLog heatpumpLog = objectMapper.readValue(heatpumpLogString, HeatpumpLog.class);
-            System.out.print(heatpumpLog.getT_room() + " ");
+            final HeatpumpLog heatpumpLog = OBJECT_MAPPER.readValue(heatpumpLogString, HeatpumpLog.class);
+            System.out.print(heatpumpLog.gettRoom() + " ");
             influx(heatpumpLog);
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
@@ -51,16 +45,16 @@ public class Heatpump implements Runnable {
         final Point point = Point.measurement(influx.getMeasurementIdentifier())
                 .time(LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond(), TimeUnit.SECONDS)
                 .addField("state", heatpumpLog.getState())
-                .addField("t_1", heatpumpLog.getT_1())
-                .addField("t_2", heatpumpLog.getT_2())
-                .addField("fan_power", heatpumpLog.getFan_power())
-                .addField("t_compressor_in", heatpumpLog.getT_compressor_in())
-                .addField("t_compressor_in_transient", heatpumpLog.getT_compressor_in_transient())
-                .addField("t_compressor_out", heatpumpLog.getT_compressor_out())
-                .addField("t_air_in", heatpumpLog.getT_air_in())
-                .addField("t_air_out", heatpumpLog.getT_air_out())
-                .addField("t_water_in", heatpumpLog.getT_water_in())
-                .addField("t_water_out", heatpumpLog.getT_water_out())
+                .addField("t_1", heatpumpLog.getT1())
+                .addField("t_2", heatpumpLog.getT2())
+                .addField("fan_power", heatpumpLog.getFanPower())
+                .addField("t_compressor_in", heatpumpLog.gettCompressorIn())
+                .addField("t_compressor_in_transient", heatpumpLog.gettCompressorInTransient())
+                .addField("t_compressor_out", heatpumpLog.gettCompressorOut())
+                .addField("t_air_in", heatpumpLog.gettAirIn())
+                .addField("t_air_out", heatpumpLog.gettAirOut())
+                .addField("t_water_in", heatpumpLog.gettWaterIn())
+                .addField("t_water_out", heatpumpLog.gettWaterOut())
                 .addField("t_compressor_out_transient", heatpumpLog.getT_compressor_out_transient())
                 .addField("p_compressor_in", heatpumpLog.getP_compressor_in())
                 .addField("p_compressor_out", heatpumpLog.getP_compressor_out())
@@ -68,12 +62,12 @@ public class Heatpump implements Runnable {
                 .addField("fan", heatpumpLog.getFan())
                 .addField("t_inverter", heatpumpLog.getT_inverter())
                 .addField("compressor_power_low_accuracy", heatpumpLog.getCompressor_power_low_accuracy())
-                .addField("t_room", heatpumpLog.getT_room())
-                .addField("t_room_target", heatpumpLog.getT_room_target())
-                .addField("t_thermostat_setpoint", heatpumpLog.getT_thermostat_setpoint())
-                .addField("cm_mass_power_in", heatpumpLog.getCm_mass_power_in())
-                .addField("cm_mass_power_out", heatpumpLog.getCm_mass_power_out())
-                .addField("t_water_house_in", heatpumpLog.getT_water_house_in())
+                .addField("t_room", heatpumpLog.gettRoom())
+                .addField("t_room_target", heatpumpLog.gettRoom_target())
+                .addField("t_thermostat_setpoint", heatpumpLog.gettThermostatSetpoint())
+                .addField("cm_mass_power_in", heatpumpLog.getCmMassPowerIn())
+                .addField("cm_mass_power_out", heatpumpLog.getCmMassPowerOut())
+                .addField("t_water_house_in", heatpumpLog.gettWaterHouseIn())
                 .addField("cm_mass_flow", heatpumpLog.getCm_mass_flow())
                 .addField("ot_boiler_feed_temperature", heatpumpLog.getOt_boiler_feed_temperature())
                 .addField("ot_boiler_return_temperature", heatpumpLog.getOt_boiler_return_temperature())
@@ -82,24 +76,6 @@ public class Heatpump implements Runnable {
     }
 
     private String doHeatpumpRequest() throws IOException, InterruptedException {
-        final String url = auth.getLogurl();
-        final String apiKey = auth.getApikey();
-        final String authorization = "Bearer " + auth.getToken();
-
-        HttpRequest request = HttpRequest.newBuilder()
-                .GET()
-                .uri(URI.create(url))
-                .setHeader("User-Agent", "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/115.0") // add request header
-                .setHeader("apikey", apiKey)
-                .setHeader("authorization", authorization)
-                .build();
-
-        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-
-        if (response.statusCode() != 200) {
-            throw new RuntimeException("Incorrect response: " + response);
-        }
-
-        return response.body();
+        return httpClient.get(auth.getLogurl(), auth.getToken());
     }
 }

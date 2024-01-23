@@ -2,15 +2,12 @@ package com.github.zeekoe.bluebird.heatpump;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.zeekoe.bluebird.heatpump.model.Token;
+import com.github.zeekoe.bluebird.infrastructure.MyHttpClient;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.Properties;
 
 public class Auth {
@@ -22,17 +19,14 @@ public class Auth {
             PASSWORD = properties.getProperty("bluebird.password");
             API_KEY = properties.getProperty("bluebird.apikey");
             LOG_URL = properties.getProperty("bluebird.logurl");
-            TOKEN_URL = properties.getProperty("bluebird.tokenurl");
+            TOKEN_URL = "https://auth.weheat.nl/auth/realms/Weheat/protocol/openid-connect/token";
 
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private static final HttpClient httpClient = HttpClient.newBuilder()
-            .version(HttpClient.Version.HTTP_2)
-            .connectTimeout(Duration.ofSeconds(10))
-            .build();
+    private static final MyHttpClient httpClient = new MyHttpClient();
     private Token token = null;
 
     private static String USERNAME;
@@ -63,33 +57,27 @@ public class Auth {
     }
 
     private String refreshToken() throws IOException, InterruptedException {
-        String url = TOKEN_URL + "?grant_type=refresh_token";
-        String request = "{\"refresh_token\":\"" + token.getRefresh_token() + "\"}";
-        return doRequest(request, url);
+        return httpClient.post(TOKEN_URL,
+                Map.of("Content-Type", "application/x-www-form-urlencoded",
+                        "Accept", "application/json"),
+                Map.of(
+                        "grant_type", "refresh_token",
+                        "scope", "openid",
+                        "client_id", "WeheatCommunityAPI",
+                        "refresh_token", token.getRefresh_token()
+                ));
     }
 
     private String doLogin() throws IOException, InterruptedException {
-        String url = TOKEN_URL + "?grant_type=password";
-        String request = "{\"email\":\"" + USERNAME + "\",\"password\":\"" + PASSWORD + "\",\"gotrue_meta_security\":{}}";
-        System.out.print(request);
-        return doRequest(request, url);
-    }
-
-    private static String doRequest(String requestPayload, String loginUrl) throws IOException, InterruptedException {
-        HttpRequest request = HttpRequest.newBuilder()
-                .POST(HttpRequest.BodyPublishers.ofString(requestPayload))
-                .uri(URI.create(loginUrl))
-                .setHeader("User-Agent", "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/116.0") // add request header
-                .setHeader("Content-Type", "application/json;charset=UTF-8")
-                .setHeader("apikey", API_KEY)
-                .build();
-
-        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-
-        if(response.statusCode() != 200) {
-            throw new RuntimeException("Incorrect status code in token retrieval " + response);
-        }
-
-        return response.body();
+        return httpClient.post(TOKEN_URL,
+                Map.of("Content-Type", "application/x-www-form-urlencoded",
+                        "Accept", "application/json"),
+                Map.of(
+                        "grant_type", "password",
+                        "scope", "openid",
+                        "client_id", "WeheatCommunityAPI",
+                        "username", USERNAME,
+                        "password", PASSWORD
+                ));
     }
 }
