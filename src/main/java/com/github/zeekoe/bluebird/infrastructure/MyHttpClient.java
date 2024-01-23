@@ -30,6 +30,7 @@ public class MyHttpClient {
 
         final HttpResponse<InputStream> httpResponse = httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofInputStream());
         if (httpResponse.statusCode() != 200) {
+            System.out.println(decodeResponseBody(httpResponse));
             throw new RuntimeException("Incorrect response: " + httpResponse);
         }
 
@@ -44,6 +45,7 @@ public class MyHttpClient {
 
         final HttpResponse<InputStream> httpResponse = httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofInputStream());
         if (httpResponse.statusCode() != 200) {
+            System.out.println(decodeResponseBody(httpResponse));
             throw new RuntimeException("Incorrect response: " + httpResponse);
         }
 

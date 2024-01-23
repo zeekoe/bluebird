@@ -1,6 +1,5 @@
 package com.github.zeekoe.bluebird.heatpump;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.github.zeekoe.bluebird.heatpump.model.HeatpumpLog;
@@ -63,7 +62,7 @@ public class Heatpump implements Runnable {
                 .addField("t_inverter", heatpumpLog.getT_inverter())
                 .addField("compressor_power_low_accuracy", heatpumpLog.getCompressor_power_low_accuracy())
                 .addField("t_room", heatpumpLog.gettRoom())
-                .addField("t_room_target", heatpumpLog.gettRoom_target())
+                .addField("t_room_target", heatpumpLog.gettRoomTarget())
                 .addField("t_thermostat_setpoint", heatpumpLog.gettThermostatSetpoint())
                 .addField("cm_mass_power_in", heatpumpLog.getCmMassPowerIn())
                 .addField("cm_mass_power_out", heatpumpLog.getCmMassPowerOut())
