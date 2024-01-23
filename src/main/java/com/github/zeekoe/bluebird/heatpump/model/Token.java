@@ -36,7 +36,7 @@ public class Token {
     }
 
     public LocalDateTime getExpiryDateTime() {
-        return tokenTime.plusMinutes(expires_in);
+        return tokenTime.plusSeconds(expires_in);
     }
 
     public String getRefresh_token() {
