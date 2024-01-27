@@ -70,6 +70,7 @@ public class Heatpump implements Runnable {
                 .addField("cm_mass_flow", heatpumpLog.getCm_mass_flow())
                 .addField("ot_boiler_feed_temperature", heatpumpLog.getOt_boiler_feed_temperature())
                 .addField("ot_boiler_return_temperature", heatpumpLog.getOt_boiler_return_temperature())
+                .addField("error", heatpumpLog.getError())
                 .build();
         influx.writePoint(point);
     }
