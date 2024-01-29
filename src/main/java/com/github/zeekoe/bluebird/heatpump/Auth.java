@@ -3,6 +3,7 @@ package com.github.zeekoe.bluebird.heatpump;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.zeekoe.bluebird.heatpump.model.Token;
 import com.github.zeekoe.bluebird.infrastructure.MyHttpClient;
+import com.github.zeekoe.bluebird.Const;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -14,7 +15,7 @@ public class Auth {
     static {
         Properties properties = new Properties();
         try {
-            properties.load(new FileInputStream("/etc/bluebird.config"));
+            properties.load(new FileInputStream(Const.CONFIG_FILE_PATH));
             USERNAME = properties.getProperty("bluebird.username");
             PASSWORD = properties.getProperty("bluebird.password");
             API_KEY = properties.getProperty("bluebird.apikey");

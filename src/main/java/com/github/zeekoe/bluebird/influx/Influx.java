@@ -1,9 +1,10 @@
 package com.github.zeekoe.bluebird.influx;
 
+import com.github.zeekoe.bluebird.Const;
+
 import org.influxdb.InfluxDB;
 import org.influxdb.InfluxDBFactory;
 import org.influxdb.dto.Point;
-
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
@@ -26,7 +27,7 @@ public class Influx {
     public Influx() {
         Properties properties = new Properties();
         try {
-            properties.load(new FileInputStream("/etc/bluebird.config"));
+            properties.load(new FileInputStream(Const.CONFIG_FILE_PATH));
         } catch (IOException e) {
             e.printStackTrace();
         }
