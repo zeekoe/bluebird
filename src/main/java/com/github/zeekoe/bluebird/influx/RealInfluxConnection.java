@@ -3,6 +3,14 @@ package com.github.zeekoe.bluebird.influx;
 import org.influxdb.InfluxDB;
 import org.influxdb.InfluxDBFactory;
 import org.influxdb.dto.Point;
+import org.influxdb.dto.Query;
+import org.influxdb.dto.QueryResult;
+
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.github.zeekoe.bluebird.infrastructure.BluebirdProperties.property;
 import static com.github.zeekoe.bluebird.infrastructure.BluebirdProperty.INFLUXDB_DATABASE;
@@ -25,7 +33,18 @@ public class RealInfluxConnection implements InfluxConnection {
         influxDB.write(point);
     }
 
-    public InfluxDB getInfluxDB() {
-        return influxDB;
+    public List<ZonedDateTime> retrieveInfluxedTimesBetween(ZonedDateTime oldestLog, ZonedDateTime newestLog) {
+        final String queryString = "SELECT \"t_room\" FROM \"blackbird\" " +
+                " WHERE time >= '" + oldestLog.format(DateTimeFormatter.ISO_ZONED_DATE_TIME) + "'" +
+                " and time <= '" + newestLog.format(DateTimeFormatter.ISO_ZONED_DATE_TIME) + "';";
+        final QueryResult result = influxDB.query(new Query(queryString));
+        final List<QueryResult.Series> series1 = result.getResults().get(0).getSeries();
+        for (List<Object> series : series1.get(0).getValues()) {
+            System.out.println(series);
+        }
+        return series1.get(0).getValues()
+                .stream().map(s -> ZonedDateTime.parse(s.get(0).toString())
+                        .truncatedTo(ChronoUnit.SECONDS))
+                .collect(Collectors.toList());
     }
 }
