@@ -65,6 +65,7 @@ public class Heatpump implements Runnable {
     final String to = formatDateTime(now);
 
     String url = property(WEHEAT_LOG_URL).replace("/latest", "") + "/raw?startTime=" + from + "&endTime=" + to;
+    System.out.println(url);
     return OBJECT_MAPPER.readValue(httpClient.get(url, auth.getToken()), HeatpumpLog[].class);
   }
 

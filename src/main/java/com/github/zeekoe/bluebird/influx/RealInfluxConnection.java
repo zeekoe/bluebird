@@ -38,6 +38,7 @@ public class RealInfluxConnection implements InfluxConnection {
     final String queryString = "SELECT \"t_room\" FROM \"" + property(INFLUXDB_MEASUREMENT) + "\" " +
         " WHERE time >= '" + oldestLog.format(DateTimeFormatter.ISO_ZONED_DATE_TIME) + "'" +
         " and time <= '" + newestLog.format(DateTimeFormatter.ISO_ZONED_DATE_TIME) + "';";
+    System.out.println(queryString);
     final QueryResult result = influxDB.query(new Query(queryString));
     final List<QueryResult.Series> series1 = result.getResults().get(0).getSeries();
 

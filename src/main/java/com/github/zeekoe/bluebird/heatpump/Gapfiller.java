@@ -22,8 +22,9 @@ public class Gapfiller {
 
   public Gapfiller() {
     this.gapStartTime = ZonedDateTime.now().minusHours(2);
-    System.out.println("Gapfiller fresh start, set gap start time to " + gapStartTime);
+    System.out.println("Gapfiller fresh start.");
     nextFillTime = ZonedDateTime.now().plusSeconds(10);
+    printGapfillerWindow();
     setTimeWindow();
 
   }
@@ -48,12 +49,16 @@ public class Gapfiller {
         gapStartTime = nextFillTime;
         nextFillTime = ZonedDateTime.now()
             .plusMinutes(timeWindow)
-            .plusSeconds(new Random().nextInt(20));
-        System.out.println("Gapfiller next window: " + gapStartTime + " - " + nextFillTime);
+            .plusSeconds(new Random().nextInt(20)); // wait a little after the initial startup server load
+        printGapfillerWindow();
       }
     } catch (Exception e) {
       System.out.println("Gapfiller failed: " + e.getMessage());
     }
+  }
+
+  private void printGapfillerWindow() {
+    System.out.println("Gapfiller next window: " + gapStartTime + " - " + nextFillTime);
   }
 
   private void fillTheGaps(HeatpumpLog[] heatpumplogs) {
