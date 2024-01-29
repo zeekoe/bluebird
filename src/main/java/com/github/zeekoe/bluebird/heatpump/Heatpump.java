@@ -18,10 +18,10 @@ import static com.github.zeekoe.bluebird.infrastructure.BluebirdProperties.prope
 import static com.github.zeekoe.bluebird.infrastructure.BluebirdProperty.WEHEAT_LOG_URL;
 
 public class Heatpump implements Runnable {
-
     public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper()
             .registerModule(new JavaTimeModule());
     private static final MyHttpClient httpClient = new MyHttpClient();
+    private final Gapfiller gapfiller = new Gapfiller();
 
     private final Auth auth;
     private final InfluxConnection influxConnection;
@@ -43,6 +43,7 @@ public class Heatpump implements Runnable {
             final HeatpumpLog heatpumpLog = doHeatpumpRequest();
             System.out.print(heatpumpLog.gettRoom() + " ");
             influx(heatpumpLog);
+            gapfiller.checkAndRun();
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -58,9 +59,9 @@ public class Heatpump implements Runnable {
         return OBJECT_MAPPER.readValue(responseBody, HeatpumpLog.class);
     }
 
-    public HeatpumpLog[] doHeatpumpGapRequest(int minutes) throws IOException, InterruptedException {
+    public HeatpumpLog[] doHeatpumpGapRequest(ZonedDateTime gapStartTime) throws IOException, InterruptedException {
         final ZonedDateTime now = ZonedDateTime.now();
-        final String from = formatDateTime(now.minusMinutes(minutes));
+        final String from = formatDateTime(gapStartTime);
         final String to = formatDateTime(now);
 
         String url = property(WEHEAT_LOG_URL).replace("/latest","") + "/raw?startTime=" + from  + "&endTime=" + to;

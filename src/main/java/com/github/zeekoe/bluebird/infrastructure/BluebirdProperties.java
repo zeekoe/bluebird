@@ -8,7 +8,7 @@ public class BluebirdProperties {
     private static final Properties properties;
 
     static {
-        final String configFile = "/etc/bluebird.config";
+        String configFile = "/etc/bluebird.config";
         properties = new Properties();
         try {
             properties.load(new FileInputStream(configFile));
@@ -18,6 +18,10 @@ public class BluebirdProperties {
     }
 
     public static String property(BluebirdProperty property) {
-        return properties.getProperty(property.getKey());
+        String value = properties.getProperty(property.getKey());
+        if (value == null || value.isEmpty()) {
+            return property.getDefaultValue();
+        }
+        return value;
     }
 }
