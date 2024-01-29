@@ -3,47 +3,21 @@ package com.github.zeekoe.bluebird.heatpump;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.zeekoe.bluebird.heatpump.model.Token;
 import com.github.zeekoe.bluebird.infrastructure.MyHttpClient;
-import com.github.zeekoe.bluebird.Const;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Map;
-import java.util.Properties;
+
+import static com.github.zeekoe.bluebird.infrastructure.BluebirdProperties.property;
+import static com.github.zeekoe.bluebird.infrastructure.BluebirdProperty.WEHEAT_PASSWORD;
+import static com.github.zeekoe.bluebird.infrastructure.BluebirdProperty.WEHEAT_USERNAME;
 
 public class Auth {
-    static {
-        Properties properties = new Properties();
-        try {
-            properties.load(new FileInputStream(Const.CONFIG_FILE_PATH));
-            USERNAME = properties.getProperty("bluebird.username");
-            PASSWORD = properties.getProperty("bluebird.password");
-            API_KEY = properties.getProperty("bluebird.apikey");
-            LOG_URL = properties.getProperty("bluebird.logurl");
-            TOKEN_URL = "https://auth.weheat.nl/auth/realms/Weheat/protocol/openid-connect/token";
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     private static final MyHttpClient httpClient = new MyHttpClient();
     private Token token = null;
 
-    private static String USERNAME;
-    private static String PASSWORD;
-    private static String API_KEY;
-    private static String LOG_URL;
-    private static String TOKEN_URL;
+    private static final String TOKEN_URL = "https://auth.weheat.nl/auth/realms/Weheat/protocol/openid-connect/token";;
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-
-    public String getApikey() {
-        return API_KEY;
-    }
-
-    public String getLogurl() {
-        return LOG_URL;
-    }
 
     public String getToken() throws IOException, InterruptedException {
         if (token == null) {
@@ -77,8 +51,8 @@ public class Auth {
                         "grant_type", "password",
                         "scope", "openid",
                         "client_id", "WeheatCommunityAPI",
-                        "username", USERNAME,
-                        "password", PASSWORD
+                        "username", property(WEHEAT_USERNAME),
+                        "password", property(WEHEAT_PASSWORD)
                 ));
     }
 }

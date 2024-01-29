@@ -3,7 +3,8 @@ package com.github.zeekoe.bluebird.heatpump;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.github.zeekoe.bluebird.heatpump.model.HeatpumpLog;
-import com.github.zeekoe.bluebird.influx.Influx;
+import com.github.zeekoe.bluebird.influx.InfluxConnection;
+import com.github.zeekoe.bluebird.influx.RealInfluxConnection;
 import com.github.zeekoe.bluebird.infrastructure.MyHttpClient;
 import org.influxdb.dto.Point;
 
@@ -12,6 +13,10 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.concurrent.TimeUnit;
 
+import static com.github.zeekoe.bluebird.infrastructure.BluebirdProperties.property;
+import static com.github.zeekoe.bluebird.infrastructure.BluebirdProperty.INFLUXDB_MEASUREMENT;
+import static com.github.zeekoe.bluebird.infrastructure.BluebirdProperty.WEHEAT_LOG_URL;
+
 public class Heatpump implements Runnable {
 
     public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper()
@@ -19,9 +24,16 @@ public class Heatpump implements Runnable {
     private static final MyHttpClient httpClient = new MyHttpClient();
 
     private final Auth auth;
+    private final InfluxConnection influxConnection;
 
     public Heatpump() {
         auth = new Auth();
+        influxConnection = new RealInfluxConnection();
+    }
+
+    public Heatpump(InfluxConnection influxConnection) {
+        auth = new Auth();
+        this.influxConnection = influxConnection;
     }
 
     @Override
@@ -40,8 +52,7 @@ public class Heatpump implements Runnable {
     }
 
     private void influx(HeatpumpLog heatpumpLog) {
-        final Influx influx = new Influx(); // TODO reuse Influx instance
-        final Point point = Point.measurement(influx.getMeasurementIdentifier())
+        final Point point = Point.measurement(property(INFLUXDB_MEASUREMENT))
                 .time(LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond(), TimeUnit.SECONDS)
                 .addField("state", heatpumpLog.getState())
                 .addField("t_1", heatpumpLog.getT1())
@@ -72,10 +83,10 @@ public class Heatpump implements Runnable {
                 .addField("ot_boiler_return_temperature", heatpumpLog.getOt_boiler_return_temperature())
                 .addField("error", heatpumpLog.getError())
                 .build();
-        influx.writePoint(point);
+        influxConnection.writePoint(point);
     }
 
     private String doHeatpumpRequest() throws IOException, InterruptedException {
-        return httpClient.get(auth.getLogurl(), auth.getToken());
+        return httpClient.get(property(WEHEAT_LOG_URL), auth.getToken());
     }
 }
