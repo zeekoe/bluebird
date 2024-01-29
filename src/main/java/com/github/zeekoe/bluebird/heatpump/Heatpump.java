@@ -18,60 +18,60 @@ import static com.github.zeekoe.bluebird.infrastructure.BluebirdProperties.prope
 import static com.github.zeekoe.bluebird.infrastructure.BluebirdProperty.WEHEAT_LOG_URL;
 
 public class Heatpump implements Runnable {
-    public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper()
-            .registerModule(new JavaTimeModule());
-    private static final MyHttpClient httpClient = new MyHttpClient();
-    private final Gapfiller gapfiller = new Gapfiller();
+  public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper()
+      .registerModule(new JavaTimeModule());
+  private static final MyHttpClient httpClient = new MyHttpClient();
+  private final Gapfiller gapfiller = new Gapfiller();
 
-    private final Auth auth;
-    private final InfluxConnection influxConnection;
+  private final Auth auth;
+  private final InfluxConnection influxConnection;
 
-    @SuppressWarnings("unused") // instantiated by Retryer
-    public Heatpump() {
-        auth = new Auth();
-        influxConnection = new RealInfluxConnection();
+  @SuppressWarnings("unused") // instantiated by Retryer
+  public Heatpump() {
+    auth = new Auth();
+    influxConnection = new RealInfluxConnection();
+  }
+
+  public Heatpump(InfluxConnection influxConnection) {
+    auth = new Auth();
+    this.influxConnection = influxConnection;
+  }
+
+  @Override
+  public void run() {
+    try {
+      final HeatpumpLog heatpumpLog = doHeatpumpRequest();
+      System.out.print(heatpumpLog.gettRoom() + " ");
+      influx(heatpumpLog);
+      gapfiller.checkAndRun();
+    } catch (IOException | InterruptedException e) {
+      throw new RuntimeException(e);
     }
+  }
 
-    public Heatpump(InfluxConnection influxConnection) {
-        auth = new Auth();
-        this.influxConnection = influxConnection;
-    }
+  private void influx(HeatpumpLog heatpumpLog) {
+    final Point point = PointMapper.map(heatpumpLog);
+    influxConnection.writePoint(point);
+  }
 
-    @Override
-    public void run() {
-        try {
-            final HeatpumpLog heatpumpLog = doHeatpumpRequest();
-            System.out.print(heatpumpLog.gettRoom() + " ");
-            influx(heatpumpLog);
-            gapfiller.checkAndRun();
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
+  private HeatpumpLog doHeatpumpRequest() throws IOException, InterruptedException {
+    final String responseBody = httpClient.get(property(WEHEAT_LOG_URL), auth.getToken());
+    return OBJECT_MAPPER.readValue(responseBody, HeatpumpLog.class);
+  }
 
-    private void influx(HeatpumpLog heatpumpLog) {
-        final Point point = PointMapper.map(heatpumpLog);
-        influxConnection.writePoint(point);
-    }
+  public HeatpumpLog[] doHeatpumpGapRequest(ZonedDateTime gapStartTime) throws IOException, InterruptedException {
+    final ZonedDateTime now = ZonedDateTime.now();
+    final String from = formatDateTime(gapStartTime);
+    final String to = formatDateTime(now);
 
-    private HeatpumpLog doHeatpumpRequest() throws IOException, InterruptedException {
-        final String responseBody = httpClient.get(property(WEHEAT_LOG_URL), auth.getToken());
-        return OBJECT_MAPPER.readValue(responseBody, HeatpumpLog.class);
-    }
+    String url = property(WEHEAT_LOG_URL).replace("/latest", "") + "/raw?startTime=" + from + "&endTime=" + to;
+    return OBJECT_MAPPER.readValue(httpClient.get(url, auth.getToken()), HeatpumpLog[].class);
+  }
 
-    public HeatpumpLog[] doHeatpumpGapRequest(ZonedDateTime gapStartTime) throws IOException, InterruptedException {
-        final ZonedDateTime now = ZonedDateTime.now();
-        final String from = formatDateTime(gapStartTime);
-        final String to = formatDateTime(now);
-
-        String url = property(WEHEAT_LOG_URL).replace("/latest","") + "/raw?startTime=" + from  + "&endTime=" + to;
-        return OBJECT_MAPPER.readValue(httpClient.get(url, auth.getToken()), HeatpumpLog[].class);
-    }
-
-    public String formatDateTime(ZonedDateTime time) {
-        // TODO There must be a better way...
-        final ZonedDateTime utcTime = time.withZoneSameInstant(ZoneId.of("UTC"));
-        return utcTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + "T"
+  public String formatDateTime(ZonedDateTime time) {
+    // TODO There must be a better way...
+    final ZonedDateTime utcTime = time.withZoneSameInstant(ZoneId.of("UTC"));
+    return utcTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + "T"
         + utcTime.format(DateTimeFormatter.ofPattern("HH:mm:ss")) + "Z";
-    }
+  }
 }

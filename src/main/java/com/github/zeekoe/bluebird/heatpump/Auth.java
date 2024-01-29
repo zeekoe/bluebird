@@ -13,46 +13,46 @@ import static com.github.zeekoe.bluebird.infrastructure.BluebirdProperty.WEHEAT_
 import static com.github.zeekoe.bluebird.infrastructure.BluebirdProperty.WEHEAT_USERNAME;
 
 public class Auth {
-    private static final MyHttpClient httpClient = new MyHttpClient();
-    private Token token = null;
+  private static final MyHttpClient httpClient = new MyHttpClient();
+  private Token token = null;
 
-    private static final String TOKEN_URL = "https://auth.weheat.nl/auth/realms/Weheat/protocol/openid-connect/token";;
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+  private static final String TOKEN_URL = "https://auth.weheat.nl/auth/realms/Weheat/protocol/openid-connect/token";
+  private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-    public String getToken() throws IOException, InterruptedException {
-        if (token == null) {
-            System.out.println("Retrieving token");
-            token = OBJECT_MAPPER.readValue(doLogin(), Token.class);
-        }
-        if (token.getExpiryDateTime().minusMinutes(1).isBefore(LocalDateTime.now())) {
-            System.out.println("Refreshing token");
-            token = OBJECT_MAPPER.readValue(refreshToken(), Token.class);
-        }
-        return token.getAccess_token();
+  public String getToken() throws IOException, InterruptedException {
+    if (token == null) {
+      System.out.println("Retrieving token");
+      token = OBJECT_MAPPER.readValue(doLogin(), Token.class);
     }
-
-    private String refreshToken() throws IOException, InterruptedException {
-        return httpClient.post(TOKEN_URL,
-                Map.of("Content-Type", "application/x-www-form-urlencoded",
-                        "Accept", "application/json"),
-                Map.of(
-                        "grant_type", "refresh_token",
-                        "scope", "openid",
-                        "client_id", "WeheatCommunityAPI",
-                        "refresh_token", token.getRefresh_token()
-                ));
+    if (token.getExpiryDateTime().minusMinutes(1).isBefore(LocalDateTime.now())) {
+      System.out.println("Refreshing token");
+      token = OBJECT_MAPPER.readValue(refreshToken(), Token.class);
     }
+    return token.getAccess_token();
+  }
 
-    private String doLogin() throws IOException, InterruptedException {
-        return httpClient.post(TOKEN_URL,
-                Map.of("Content-Type", "application/x-www-form-urlencoded",
-                        "Accept", "application/json"),
-                Map.of(
-                        "grant_type", "password",
-                        "scope", "openid",
-                        "client_id", "WeheatCommunityAPI",
-                        "username", property(WEHEAT_USERNAME),
-                        "password", property(WEHEAT_PASSWORD)
-                ));
-    }
+  private String refreshToken() throws IOException, InterruptedException {
+    return httpClient.post(TOKEN_URL,
+        Map.of("Content-Type", "application/x-www-form-urlencoded",
+            "Accept", "application/json"),
+        Map.of(
+            "grant_type", "refresh_token",
+            "scope", "openid",
+            "client_id", "WeheatCommunityAPI",
+            "refresh_token", token.getRefresh_token()
+        ));
+  }
+
+  private String doLogin() throws IOException, InterruptedException {
+    return httpClient.post(TOKEN_URL,
+        Map.of("Content-Type", "application/x-www-form-urlencoded",
+            "Accept", "application/json"),
+        Map.of(
+            "grant_type", "password",
+            "scope", "openid",
+            "client_id", "WeheatCommunityAPI",
+            "username", property(WEHEAT_USERNAME),
+            "password", property(WEHEAT_PASSWORD)
+        ));
+  }
 }
