@@ -2,12 +2,12 @@ package com.github.zeekoe.bluebird.heatpump.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Objects;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class HeatpumpLog {
-    private LocalDateTime timestamp;
+    private ZonedDateTime timestamp;
     private long unix_time_mcu;
     private int state;
     private int error;
@@ -38,11 +38,11 @@ public class HeatpumpLog {
     private double ot_boiler_feed_temperature;
     private double ot_boiler_return_temperature;
 
-    public LocalDateTime getTimestamp() {
+    public ZonedDateTime getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(LocalDateTime timestamp) {
+    public void setTimestamp(ZonedDateTime timestamp) {
         this.timestamp = timestamp;
     }
 

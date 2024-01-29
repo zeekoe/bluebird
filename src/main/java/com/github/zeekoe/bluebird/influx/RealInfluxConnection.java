@@ -18,10 +18,14 @@ public class RealInfluxConnection implements InfluxConnection {
                 property(INFLUXDB_URL),
                 property(INFLUXDB_USERNAME),
                 property(INFLUXDB_PASSWORD));
+        influxDB.setDatabase(property(INFLUXDB_DATABASE));
     }
 
     public void writePoint(Point point) {
-        influxDB.setDatabase(property(INFLUXDB_DATABASE));
         influxDB.write(point);
+    }
+
+    public InfluxDB getInfluxDB() {
+        return influxDB;
     }
 }

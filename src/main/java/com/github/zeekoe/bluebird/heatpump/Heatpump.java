@@ -9,8 +9,6 @@ import com.github.zeekoe.bluebird.infrastructure.MyHttpClient;
 import org.influxdb.dto.Point;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.concurrent.TimeUnit;
 
 import static com.github.zeekoe.bluebird.infrastructure.BluebirdProperties.property;
@@ -53,7 +51,7 @@ public class Heatpump implements Runnable {
 
     private void influx(HeatpumpLog heatpumpLog) {
         final Point point = Point.measurement(property(INFLUXDB_MEASUREMENT))
-                .time(LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond(), TimeUnit.SECONDS)
+                .time(heatpumpLog.getTimestamp().toEpochSecond(), TimeUnit.SECONDS)
                 .addField("state", heatpumpLog.getState())
                 .addField("t_1", heatpumpLog.getT1())
                 .addField("t_2", heatpumpLog.getT2())
