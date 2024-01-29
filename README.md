@@ -24,7 +24,7 @@ influxdb.password=password
 
 ## Running
 
-`java -jar target/bluebird-0.2-SNAPSHOT-jar-with-dependencies.jar`
+`java -jar target/bluebird-0.3-SNAPSHOT-jar-with-dependencies.jar`
 
 ## Detailed setup
 
