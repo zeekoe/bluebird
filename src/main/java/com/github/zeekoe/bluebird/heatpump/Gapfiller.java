@@ -49,7 +49,7 @@ public class Gapfiller {
         gapStartTime = nextFillTime;
         nextFillTime = ZonedDateTime.now()
             .plusMinutes(timeWindow)
-            .plusSeconds(new Random().nextInt(20)); // wait a little after the initial startup server load
+            .plusSeconds(new Random().nextInt(10)); // wait a little after the initial startup server load
         printGapfillerWindow();
       }
     } catch (Exception e) {

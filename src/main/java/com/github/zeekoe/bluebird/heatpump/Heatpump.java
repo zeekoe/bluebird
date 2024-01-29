@@ -21,7 +21,8 @@ public class Heatpump implements Runnable {
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper()
       .registerModule(new JavaTimeModule());
   private static final MyHttpClient httpClient = new MyHttpClient();
-  private final Gapfiller gapfiller = new Gapfiller();
+
+  public static final Gapfiller GAPFILLER = new Gapfiller();
 
   private final Auth auth;
   private final InfluxConnection influxConnection;
@@ -43,7 +44,7 @@ public class Heatpump implements Runnable {
       final HeatpumpLog heatpumpLog = doHeatpumpRequest();
       System.out.print(heatpumpLog.gettRoom() + " ");
       influx(heatpumpLog);
-      gapfiller.checkAndRun();
+      GAPFILLER.checkAndRun();
     } catch (IOException | InterruptedException e) {
       throw new RuntimeException(e);
     }
