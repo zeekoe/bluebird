@@ -32,27 +32,41 @@ public class Auth {
   }
 
   private String refreshToken() throws IOException, InterruptedException {
-    return httpClient.post(TOKEN_URL,
-        Map.of("Content-Type", "application/x-www-form-urlencoded",
-            "Accept", "application/json"),
-        Map.of(
-            "grant_type", "refresh_token",
-            "scope", "openid",
-            "client_id", "WeheatCommunityAPI",
-            "refresh_token", token.getRefresh_token()
-        ));
+    try {
+      return httpClient.post(TOKEN_URL,
+          Map.of("Content-Type", "application/x-www-form-urlencoded",
+              "Accept", "application/json"),
+          Map.of(
+              "grant_type", "refresh_token",
+              "scope", "openid",
+              "client_id", "WeheatCommunityAPI",
+              "refresh_token", token.getRefresh_token()
+          ));
+    } catch (MyHttpClient.UnauthorizedException e) {
+      token = null;
+      throw new RuntimeException(e);
+    }
   }
 
   private String doLogin() throws IOException, InterruptedException {
-    return httpClient.post(TOKEN_URL,
-        Map.of("Content-Type", "application/x-www-form-urlencoded",
-            "Accept", "application/json"),
-        Map.of(
-            "grant_type", "password",
-            "scope", "openid",
-            "client_id", "WeheatCommunityAPI",
-            "username", property(WEHEAT_USERNAME),
-            "password", property(WEHEAT_PASSWORD)
-        ));
+    try {
+      return httpClient.post(TOKEN_URL,
+          Map.of("Content-Type", "application/x-www-form-urlencoded",
+              "Accept", "application/json"),
+          Map.of(
+              "grant_type", "password",
+              "scope", "openid",
+              "client_id", "WeheatCommunityAPI",
+              "username", property(WEHEAT_USERNAME),
+              "password", property(WEHEAT_PASSWORD)
+          ));
+    } catch (MyHttpClient.UnauthorizedException e) {
+      token = null;
+      throw new RuntimeException(e);
+    }
+  }
+
+  public void invalidateToken() {
+    this.token = null;
   }
 }

@@ -56,7 +56,13 @@ public class Heatpump implements Runnable {
   }
 
   private HeatpumpLog doHeatpumpRequest() throws IOException, InterruptedException {
-    final String responseBody = httpClient.get(property(WEHEAT_LOG_URL), auth.getToken());
+    final String responseBody;
+    try {
+      responseBody = httpClient.get(property(WEHEAT_LOG_URL), auth.getToken());
+    } catch (MyHttpClient.UnauthorizedException e) {
+      auth.invalidateToken();
+      throw new RuntimeException(e);
+    }
     return OBJECT_MAPPER.readValue(responseBody, HeatpumpLog.class);
   }
 
@@ -67,7 +73,12 @@ public class Heatpump implements Runnable {
 
     String url = property(WEHEAT_LOG_URL).replace("/latest", "") + "/raw?startTime=" + from + "&endTime=" + to;
     System.out.println(url);
-    return OBJECT_MAPPER.readValue(httpClient.get(url, auth.getToken()), HeatpumpLog[].class);
+    try {
+      return OBJECT_MAPPER.readValue(httpClient.get(url, auth.getToken()), HeatpumpLog[].class);
+    } catch (MyHttpClient.UnauthorizedException e) {
+      auth.invalidateToken();
+      throw new RuntimeException(e);
+    }
   }
 
   public String formatDateTime(ZonedDateTime time) {

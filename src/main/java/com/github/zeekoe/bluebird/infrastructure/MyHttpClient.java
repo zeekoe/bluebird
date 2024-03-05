@@ -19,7 +19,7 @@ public class MyHttpClient {
       .build();
 
 
-  public String post(String urlString, Map<String, String> headers, Map<String, String> data) throws IOException, InterruptedException {
+  public String post(String urlString, Map<String, String> headers, Map<String, String> data) throws IOException, InterruptedException, UnauthorizedException {
     final HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
         .POST(HttpRequest.BodyPublishers.ofString(encodeFormData(data)))
         .uri(URI.create(urlString));
@@ -29,7 +29,11 @@ public class MyHttpClient {
     }
 
     final HttpResponse<InputStream> httpResponse = httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofInputStream());
-    if (httpResponse.statusCode() != 200) {
+    final int statusCode = httpResponse.statusCode();
+    if (statusCode >= 400 && statusCode < 404) {
+      throw new UnauthorizedException(decodeResponseBody(httpResponse));
+    }
+    if (statusCode != 200) {
       System.out.println(decodeResponseBody(httpResponse));
       throw new RuntimeException("Incorrect response: " + httpResponse);
     }
@@ -37,14 +41,18 @@ public class MyHttpClient {
     return decodeResponseBody(httpResponse);
   }
 
-  public String get(String url, String token) throws IOException, InterruptedException {
+  public String get(String url, String token) throws IOException, InterruptedException, UnauthorizedException {
     final HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
         .GET()
         .uri(URI.create(url))
         .setHeader("Authorization", "Bearer " + token);
 
     final HttpResponse<InputStream> httpResponse = httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofInputStream());
-    if (httpResponse.statusCode() != 200) {
+    final int statusCode = httpResponse.statusCode();
+    if (statusCode >= 400 && statusCode < 404) {
+      throw new UnauthorizedException(decodeResponseBody(httpResponse));
+    }
+    if (statusCode != 200) {
       System.out.println(decodeResponseBody(httpResponse));
       throw new RuntimeException("Incorrect response: " + httpResponse);
     }
@@ -75,5 +83,11 @@ public class MyHttpClient {
           .append(URLEncoder.encode(entry.getValue(), StandardCharsets.UTF_8));
     }
     return sb.toString();
+  }
+
+  public static class UnauthorizedException extends Exception {
+    public UnauthorizedException(String message) {
+      super(message);
+    }
   }
 }
