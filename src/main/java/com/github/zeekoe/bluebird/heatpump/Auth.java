@@ -67,6 +67,7 @@ public class Auth {
   }
 
   public void invalidateToken() {
+    System.out.println("Invalidating token");
     this.token = null;
   }
 }

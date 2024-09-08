@@ -30,12 +30,21 @@ public class MyHttpClient {
 
     final HttpResponse<InputStream> httpResponse = httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofInputStream());
     final int statusCode = httpResponse.statusCode();
+    String responseBody = "";
+    try {
+      responseBody = decodeResponseBody(httpResponse);
+    } catch (Exception ignored) {}
     if (statusCode >= 400 && statusCode < 404) {
-      throw new UnauthorizedException(decodeResponseBody(httpResponse));
+      System.out.println("Statuscode " + statusCode);
+      throw new UnauthorizedException(responseBody);
+    }
+    if (responseBody.contains("Session not active")) {
+      System.out.println("Contains session not active");
+      throw new UnauthorizedException(responseBody);
     }
     if (statusCode != 200) {
-      System.out.println(decodeResponseBody(httpResponse));
-      throw new RuntimeException("Incorrect response: " + httpResponse);
+      System.out.println(responseBody);
+      throw new RuntimeException("Incorrect response: [" + httpResponse.statusCode() + "] " + httpResponse);
     }
 
     return decodeResponseBody(httpResponse);
