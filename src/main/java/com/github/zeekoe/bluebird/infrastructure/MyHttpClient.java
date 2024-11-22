@@ -47,7 +47,7 @@ public class MyHttpClient {
       throw new RuntimeException("Incorrect response: [" + httpResponse.statusCode() + "] " + httpResponse);
     }
 
-    return decodeResponseBody(httpResponse);
+    return responseBody;
   }
 
   public String get(String url, String token) throws IOException, InterruptedException, UnauthorizedException {
